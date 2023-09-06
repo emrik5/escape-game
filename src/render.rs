@@ -3,11 +3,13 @@ use std::io::{Stdout, self, Write};
 use terminal_size::{Width, Height};
 use crossterm::{queue, terminal, style, cursor};
 
+use crate::{player::Player, entity::EntityCommon};
+
 const HORIZ_FRAME_CHAR: char = '=';
 const VERTI_FRAME_CHAR: char = '0';
 
 
-pub fn render(term: &mut Stdout) -> io::Result<()> {
+pub fn render(term: &mut Stdout, player: &Player) -> io::Result<()> {
 	let (width, height) = if let Some((Width(width), Height(height))) = terminal_size::terminal_size() {
 		(width, height)
 	} else {
@@ -17,12 +19,19 @@ pub fn render(term: &mut Stdout) -> io::Result<()> {
 		term, 
 		terminal::Clear(terminal::ClearType::All),
 		terminal::Clear(terminal::ClearType::Purge),
-		cursor::MoveTo(0, 0),
+		cursor::MoveTo(1, 1),
 		style::SetForegroundColor(style::Color::White)
 	)?;
+	queue!(
+		term,
+		cursor::MoveTo(player.term_x(), player.term_y()),
+		style::Print("#"),
+	)?;
+
 	term.flush()?;
 	Ok(())
 }
+
 pub fn draw_frame(term: &mut Stdout) -> io::Result<()> {
 	let (width, height) = if let Some((Width(width), Height(height))) = terminal_size::terminal_size() {
 		(width, height)

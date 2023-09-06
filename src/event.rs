@@ -2,21 +2,29 @@ use std::{time::Duration, io};
 
 use crossterm::event::{poll, read, Event, KeyEvent, KeyCode};
 
+use crate::entity::MoveDir;
+
 pub enum ProgramEvent {
 	None,
-	Exit
+	Exit,
+	MovePlayer(MoveDir),
 }
 
 pub fn handle_input() -> io::Result<ProgramEvent> {
 	loop {
-		if poll(Duration::from_millis(0))? {
+		break if poll(Duration::from_millis(0))? {
 			match read()? {
-				Event::Key(KeyEvent { code: KeyCode::Char('w'), .. }) => { print!("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA") },
-				Event::Key(KeyEvent { code: KeyCode::Esc, .. }) => { break Ok(ProgramEvent::Exit); },
-				_ => {}
+				Event::Key(KeyEvent { code: KeyCode::Char('w'), .. }) => { Ok(ProgramEvent::MovePlayer(MoveDir::Up)) },
+				Event::Key(KeyEvent { code: KeyCode::Char('s'), .. }) => { Ok(ProgramEvent::MovePlayer(MoveDir::Down)) },
+				Event::Key(KeyEvent { code: KeyCode::Char('a'), .. }) => { Ok(ProgramEvent::MovePlayer(MoveDir::Left)) },
+				Event::Key(KeyEvent { code: KeyCode::Char('d'), .. }) => { Ok(ProgramEvent::MovePlayer(MoveDir::Right)) },
+
+				// Exit Program
+				Event::Key(KeyEvent { code: KeyCode::Esc, .. }) => { Ok(ProgramEvent::Exit) },
+				_ => { Ok(ProgramEvent::None) }
 			}
 		} else{
-			break Ok(ProgramEvent::None);
+			Ok(ProgramEvent::None)
 		} 
 	}
 }
