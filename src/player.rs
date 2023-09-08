@@ -8,10 +8,10 @@ pub struct Player {
 impl EntityCommon for Player {
     fn update_pos(&mut self) {
         match self.move_dir {
-            MoveDir::Up => self.ypos + STEP_LENGTH,
-            MoveDir::Down => self.ypos - STEP_LENGTH,
-            MoveDir::Left => self.xpos - STEP_LENGTH,
-            MoveDir::Right => self.xpos + STEP_LENGTH,
+            MoveDir::Up => self.ypos -= STEP_LENGTH,
+            MoveDir::Down => self.ypos += STEP_LENGTH,
+            MoveDir::Left => self.xpos -= STEP_LENGTH,
+            MoveDir::Right => self.xpos += STEP_LENGTH,
         };
     }
 
