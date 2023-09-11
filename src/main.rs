@@ -10,7 +10,7 @@ pub mod player;
 pub mod entity;
 pub mod event;
 
-const FRAME_RATE: f32 = 1.0;
+const FRAME_RATE: f32 = 10.0;
 
 fn main() -> io::Result<()> {
     let mut term = stdout();
@@ -29,10 +29,9 @@ fn main() -> io::Result<()> {
         match event::handle_input()? {
             ProgramEvent::Exit => break Ok(()),
 
-            ProgramEvent::MovePlayer(move_dir) => player.set_move_dir(move_dir),
+            ProgramEvent::MovePlayer(move_dir) => {player.set_move_dir(move_dir); player.update_pos();},
             _ => {}
         };
-        player.update_pos();
         render::render(&mut term, &player)?;
 
         let frame_time = glob_time.elapsed() - start_time;
