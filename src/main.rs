@@ -17,7 +17,7 @@ fn main() -> io::Result<()> {
     terminal::enable_raw_mode()?;
     queue!(
         term,
-        terminal::Clear(terminal::ClearType::All)
+        terminal::Clear(terminal::ClearType::All),
     )?;
     render::draw_frame(&mut term)?;
     let glob_time = Instant::now();
@@ -29,10 +29,10 @@ fn main() -> io::Result<()> {
         match event::handle_input()? {
             ProgramEvent::Exit => break Ok(()),
 
-            ProgramEvent::MovePlayer(move_dir) => {player.set_move_dir(move_dir); player.update_pos();},
+            ProgramEvent::MovePlayer(move_dir) => {println!("{:?}", move_dir); player.set_move_dir(move_dir); player.update_pos();},
             _ => {}
         };
-        render::render(&mut term, &player)?;
+        // render::render(&mut term, &player)?;
 
         let frame_time = glob_time.elapsed() - start_time;
         std::thread::sleep(std::time::Duration::from_millis(

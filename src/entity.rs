@@ -8,6 +8,7 @@ pub trait EntityCommon {
 	fn term_x(&self) -> u16;
 	fn term_y(&self) -> u16;
 }
+#[derive(Debug)]
 pub enum MoveDir {
 	Up,
 	Down,
