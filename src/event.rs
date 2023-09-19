@@ -1,6 +1,6 @@
 use std::{time::Duration, io};
 
-use crossterm::event::{poll, read, Event, KeyEvent, KeyCode, KeyEventKind};
+use device_query::{DeviceState, DeviceQuery, Keycode};
 
 use crate::entity::MoveDir;
 #[derive(Debug)]
@@ -10,29 +10,25 @@ pub enum ProgramEvent {
 	MovePlayer(MoveDir),
 }
 pub struct HeldKeys {
-	keys: Vec<KeyCode>
+	keys: Vec<Keycode>
 }
 
-pub fn handle_input() -> io::Result<ProgramEvent> {
-	loop {
-		// let held_keys = "";
-		// break if poll(Duration::from_millis(0))? {
-		// 	match read()? {
-		// 		Event::Key(KeyEvent { code: KeyCode::Char('w'), .. }) => { Ok(ProgramEvent::MovePlayer(MoveDir::Up)) },
-		// 		Event::Key(KeyEvent { code: KeyCode::Char('s'), .. }) => { Ok(ProgramEvent::MovePlayer(MoveDir::Down)) },
-		// 		Event::Key(KeyEvent { code: KeyCode::Char('a'), .. }) => { Ok(ProgramEvent::MovePlayer(MoveDir::Left)) },
-		// 		Event::Key(KeyEvent { code: KeyCode::Char('d'), .. }) => { Ok(ProgramEvent::MovePlayer(MoveDir::Right)) },
+pub fn handle_input(device: &DeviceState) -> Option<Vec<ProgramEvent>> {
+	let keys = device.get_keys();
+	let mut vec = Vec::with_capacity(keys.len());
+	for key in keys {
+		use Keycode as K;
+		use ProgramEvent as P;
+		vec.push(match key {
+			K::Escape => {ProgramEvent::Exit},
 
-		// 		// Exit Program
-		// 		Event::Key(KeyEvent { code: KeyCode::Esc, .. }) => { Ok(ProgramEvent::Exit) },
-		// 		_ => { Ok(ProgramEvent::None) }
-		// 	}
-		// } else{
-		// 	Ok(ProgramEvent::None)
-		// } 
-	 if poll(Duration::from_millis(0))? {
-		let keys = read()?;
-		println!("{:?}", keys);
-	 }
+			K::W => {P::MovePlayer(MoveDir::Up)},
+			K::S => {P::MovePlayer(MoveDir::Down)},
+			K::D => {P::MovePlayer(MoveDir::Right)},
+			K::A => {P::MovePlayer(MoveDir::Left)},
+
+			_ => {return None;}
+		});
 	}
+	Some(vec)
 }
